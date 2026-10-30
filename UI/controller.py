@@ -9,9 +9,43 @@ class Controller:
         self._view = view
         # the model, which implements the logic of the program and holds the data
         self._model = model
-
+    def fillDDCategories(self):
+        categoria= self._model.getCategories()
+        for c in categoria:
+            self._view._ddcategory.options.append(ft.dropdown.Option(c))
     def handleCreaGrafo(self, e):
-        pass
+        # Leggo gli anni selezionati
+        categoria= self._view._ddcategory.value
+        start_date = self._view._dp1.value
+        end_date = self._view._dp2.value
+
+        # Costruisco il grafo
+        self._model.buildGraph(categoria,start_date,end_date)
+
+        # Pulisco i risultati precedenti
+        self._view.txt_result.controls.clear()
+
+        self._view.txt_result.controls.append(
+            ft.Text("Date selezionate")
+        )
+        self._view.txt_result.controls.append(
+            ft.Text(f"Start date:{self._view._dp1.value}")
+        )
+        self._view.txt_result.controls.append(
+            ft.Text(f"End Date: {self._view._dp2.value}")
+        )
+        # Mostro il numero di nodi e archi
+        self._view.txt_result.controls.append(
+            ft.Text("Grafo correttamente creato:")
+        )
+        self._view.txt_result.controls.append(
+            ft.Text(f"Numero di nodi: {self._model.getNumNodi()}")
+        )
+        self._view.txt_result.controls.append(
+            ft.Text(f"Numero di archi: {self._model.getNumArchi()}")
+        )
+
+        self._view.update_page()
 
     def handleBestProdotti(self, e):
         pass
