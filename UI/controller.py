@@ -54,7 +54,7 @@ class Controller:
         self._view.txt_result.controls.append(
             ft.Text("I 5 prodotti piu venduti sono:")
         )
-
+        #IN INPUT DA MODEL RICEVO IL NODO (seleziono che attributo mostrare: p.product_name) e il PUNTEGGIO (score)
         for p,score in risultati:
             self._view.txt_result.controls.append(
                 ft.Text(f" {p.product_name} with score: {score}")

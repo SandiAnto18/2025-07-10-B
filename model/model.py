@@ -55,7 +55,7 @@ class Model:
 
     def i5prodottiPiuVenduti(self):
 
-        risultati = []
+        risultati = [] #CREO LISTA
 
         # ESAMINO TUTTI I NODI DEL GRAFO
         for nodo in self._graph.nodes():
@@ -74,7 +74,7 @@ class Model:
          # CALCOLO IL PUNTEGGIO DEL PRODOTTO (punteggio max del prodotto)
          punteggio = entranti - uscenti
 
-         risultati.append((nodo, punteggio))
+         risultati.append((nodo, punteggio)) # LISTA DI 2 COLONNE CON PRODOTTO(nodo) E PUNTEGGIO
 
          # ORDINO I PRODOTTI DAL PUNTEGGIO PIÙ ALTO AL PIÙ BASSO
          risultati.sort(key=lambda x: x[1], reverse=True)
