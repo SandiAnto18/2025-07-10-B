@@ -48,7 +48,20 @@ class Controller:
         self._view.update_page()
 
     def handleBestProdotti(self, e):
-        pass
+
+        risultati = self._model.i5prodottiPiuVenduti()
+
+        self._view.txt_result.controls.append(
+            ft.Text("I 5 prodotti piu venduti sono:")
+        )
+
+        for p,score in risultati:
+            self._view.txt_result.controls.append(
+                ft.Text(f" {p.product_name} with score: {score}")
+            )
+
+
+        self._view.update_page()
 
     def handleCercaCammino(self, e):
         pass

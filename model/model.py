@@ -37,7 +37,7 @@ class Model:
             p1 = pMap[p1]
             p2 = pMap[p2]
 
-            # IL PESO È LA SOMMA DEI PEZZI VENDUTI (TotPezzi/QuantitaTot)
+            # IL PESO È LA SOMMA DEI PEZZI VENDUTI di p1 e p2 (TotPezzi/QuantitaTot)
             peso= q1+q2
 
             #DIREZIONE DA VENDITE MINORI A VENDITE MAGGIORI (per TotOrdini/NuMvendite considero v1,v2)
@@ -52,6 +52,37 @@ class Model:
                 # PARITÀ: AGGIUNGO ENTRAMBI GLI ARCHI
                 self._graph.add_edge(p1, p2, weight=peso)
                 self._graph.add_edge(p2, p1, weight=peso)
+
+    def i5prodottiPiuVenduti(self):
+
+        risultati = []
+
+        # ESAMINO TUTTI I NODI DEL GRAFO
+        for nodo in self._graph.nodes():
+         # CALCOLO LA SOMMA DEI PESI DEGLI ARCHI ENTRANTI
+         entranti = sum(
+            data["weight"]
+            for _, _, data in self._graph.in_edges(nodo, data=True)
+         )
+
+         # CALCOLO LA SOMMA DEI PESI DEGLI ARCHI USCENTI
+         uscenti = sum(
+            data["weight"]
+            for _, _, data in self._graph.out_edges(nodo, data=True)
+         )
+
+         # CALCOLO IL PUNTEGGIO DEL PRODOTTO (punteggio max del prodotto)
+         punteggio = entranti - uscenti
+
+         risultati.append((nodo, punteggio))
+
+         # ORDINO I PRODOTTI DAL PUNTEGGIO PIÙ ALTO AL PIÙ BASSO
+         risultati.sort(key=lambda x: x[1], reverse=True)
+        print(risultati)
+         # RESTITUISCO I PRIMI 5 PRODOTTI
+        return risultati[:5]
+
+
 
     def getNumNodi(self):
         # Restituisco il numero di nodi
