@@ -79,30 +79,64 @@ and c.category_name = %s
         results = []
 
         cursor = conn.cursor(dictionary=True)
-        query = """select distinct p.product_id as p1 ,p2.product_id as p2 , count(distinct o.order_id) as NumOrdiniP1,
-count(distinct o2.order_id) as NumOrdiniP2,sum(distinct oi.quantity) as TotQuantitaP1, sum( distinct oi2.quantity) as TotQuantitaP2
-from products p ,order_items oi, categories c , orders o,
-products p2 ,order_items oi2, categories c2 , orders o2
-where p.category_id =c.category_id 
-and c.category_name = %s
-and o.order_date between %s and %s
-and p.product_id =oi.product_id 
-and oi.order_id =o.order_id 
-and p2.category_id =c2.category_id 
-and c2.category_name = %s
-and o2.order_date between %s and %s
-and p2.product_id =oi2.product_id 
-and oi2.order_id =o2.order_id
-and p.product_id < p2.product_id 
-group by p1,p2
+        query = """
+-- RECUPERO LE STATISTICHE DEI DUE PRODOTTI
+SELECT
+    tot1.p1 as p1,
+    tot1.numordini as NumOrdini1,
+    tot1.totquantita as TotQuantita1,
+    tot2.p2 as p2,
+    tot2.numordini as NumOrdini2,
+    tot2.totquantita as TotQuantita2
 
-                    """
+-- CREO DUE TABELLE TEMPORANEE (TOT1 E TOT2)
+FROM
+(
+    
+    SELECT
+        p.product_id AS p1,
+        COUNT(DISTINCT o.order_id) AS NumOrdini,
+        SUM(oi.quantity) AS TotQuantita
+    FROM products p, orders o, order_items oi, categories c
+    WHERE p.product_id = oi.product_id
+      AND oi.order_id = o.order_id
+      AND c.category_id = p.category_id
+      AND c.category_name = %s
+      AND o.order_date BETWEEN %s
+                           AND %s
+    GROUP BY p1
+
+) AS tot1,
+
+(
+    SELECT
+        p.product_id AS p2,
+        COUNT(DISTINCT o.order_id) AS NumOrdini,
+        SUM(oi.quantity) AS TotQuantita
+
+    FROM products p, orders o, order_items oi, categories c
+
+    WHERE p.product_id = oi.product_id
+      AND oi.order_id = o.order_id
+      AND c.category_id = p.category_id
+      AND c.category_name = %s
+      AND o.order_date BETWEEN %s
+                           AND %s
+    GROUP BY p2
+
+) AS tot2
+
+-- ABBINO I PRODOTTI A DUE A DUE
+-- CONSIDERO SOLO LE COPPIE NON INVERTITE, EVITANDO I DUPLICATI
+WHERE tot1.p1 < tot2.p2
+-- USO LE SOTTOQUERY PER AGGREGARE SEPARATAMENTE I DATI DEI DUE PRODOTTI,
+-- EVITANDO CHE LE RIGHE SI MOLTIPLICHINO QUANDO CONFRONTO LE LORO VENDITE.
+"""
 
         cursor.execute(query, (categoria,start_date,end_date,categoria,start_date,end_date))
 
         for row in cursor:
-            results.append((row["p1"],row["p2"],row["NumOrdiniP1"],row["NumOrdiniP2"],row["TotQuantitaP1"],row["TotQuantitaP2"]))
-
+            results.append((row["p1"],row["p2"],row["NumOrdini1"],row["NumOrdini2"],row["TotQuantita1"],row["TotQuantita2"]))
         cursor.close()
         conn.close()
         return results

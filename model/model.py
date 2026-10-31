@@ -37,24 +37,21 @@ class Model:
             p1 = pMap[p1]
             p2 = pMap[p2]
 
-            # IL PESO È LA SOMMA DEI PEZZI VENDUTI
+            # IL PESO È LA SOMMA DEI PEZZI VENDUTI (TotPezzi/QuantitaTot)
             peso= q1+q2
 
-            #DIREZIONE DA VENDITE MINORI A VENDITE MAGGIORI
-            if v1<v2:
+            #DIREZIONE DA VENDITE MINORI A VENDITE MAGGIORI (per TotOrdini/NuMvendite considero v1,v2)
+
+            if q1<q2:
                 # P1 HA MENO ORDINI: ARCO DA P1 A P2
                 self._graph.add_edge(p1, p2, weight=peso)
-            elif v1>v2:
+            elif q1>q2:
                 # P2 HA MENO ORDINI: ARCO DA P2 A P1
                 self._graph.add_edge(p2, p1, weight=peso)
             else:
                 # PARITÀ: AGGIUNGO ENTRAMBI GLI ARCHI
                 self._graph.add_edge(p1, p2, weight=peso)
                 self._graph.add_edge(p2, p1, weight=peso)
-
-        print("Numero di nodi:", self._graph.number_of_nodes())
-        print("Numero di archi:", self._graph.number_of_edges())
-        print("Numero di coppie restituite dalla DAO:", len(archi))
 
     def getNumNodi(self):
         # Restituisco il numero di nodi
